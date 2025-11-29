@@ -1,14 +1,15 @@
 import express from "express";
 import {config} from 'dotenv';
+import {connectDB} from "./config/database";
 import todoRoutes from "./routes/todoRoutes";
 import userRoutes from "./routes/userRoutes";
-import connectDB from "./config/database";
+
 
 config();
-connectDB();
-
 const app = express();
 app.use(express.json()); // JSON body parser
+
+connectDB();
 
 // Routes
 app.use("/api/todos", todoRoutes);
