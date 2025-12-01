@@ -8,8 +8,8 @@ import { Request, Response } from "express";
  * @access  Public
  */
 export async function getTodos(req: Request, res: Response) {
-  console.log("Fetching all todos");
-  const todos = await Todo.find();
+
+  const todos = await Todo.find({ userId: req.user!.id });
   res.json(todos);
 };
 
@@ -19,7 +19,12 @@ export async function getTodos(req: Request, res: Response) {
  * @access  Public
  */
 export async function createTodo(req: Request, res: Response) {
-  const todo = await Todo.create(req.body);
+  // ...req.body, 
+  const todo = await Todo.create({ 
+    title: req.body.title,
+    completed: req.body.completed ?? false,
+    userId: req.user!.id 
+  });
   res.status(201).json(todo);
 };
 
@@ -29,7 +34,7 @@ export async function createTodo(req: Request, res: Response) {
  * @access  Public
  */
 export async function getTodoById(req: Request, res: Response) {
-  const todo = await Todo.findById(req.params.id);
+  const todo = await Todo.findOne({ _id: req.params.id, userId: req.user!.id });
   if (!todo) {
     return res.status(404).json({ message: "Todo not found" });
   }
@@ -41,7 +46,11 @@ export async function getTodoById(req: Request, res: Response) {
  * @access  Public
  */
 export async function updateTodo(req: Request, res: Response) {
-  const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const todo = await Todo.findOneAndUpdate(
+    { _id: req.params.id, userId: req.user!.id },
+    req.body,
+    { new: true }
+  );
   if (!todo) {
     return res.status(404).json({ message: "Todo not found" });
   }
@@ -54,7 +63,7 @@ export async function updateTodo(req: Request, res: Response) {
  * @access  Public
  */
 export async function deleteTodo(req: Request, res: Response) {
-  const todo = await Todo.findByIdAndDelete(req.params.id);
+  const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId: req.user!.id });
   if (!todo) {
     return res.status(404).json({ message: "Todo not found" });
   }

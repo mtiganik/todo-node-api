@@ -43,6 +43,19 @@ router.post("/register", register);
  *   post:
  *     summary: Login user
  *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+
  *     responses:
  *       200:
  *         description: Successfully logged in

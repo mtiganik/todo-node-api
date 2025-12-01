@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getTodos, createTodo, deleteTodo, updateTodo, getTodoById} from "../controllers/todoController";
-
+import { authMiddleware } from "../services/authMiddleware";
 const router = Router();
 
 /**
@@ -12,27 +12,11 @@ const router = Router();
  *       required:
  *         - title
  *       properties:
- *         id:
- *           type: string
- *           description: Auto-generated ID of the todo
  *         title:
  *           type: string
  *           description: The todo title
- *         description:
- *           type: string
- *           description: Optional description
- *         completed:
- *           type: boolean
- *           description: Is the todo completed?
- *         userId:
- *           type: string
- *           description: ID of the user who owns the todo
  *       example:
- *         id: "65a123efc341234d45677ab1"
  *         title: "Finish API documentation"
- *         description: "Write Swagger annotations"
- *         completed: false
- *         userId: "64f15d3ae2b91400126e91b5"
  * 
  *     User:
  *       type: object
@@ -60,35 +44,41 @@ const router = Router();
  * /api/todos:
  *   get:
  *     summary: Get all todos
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Todos]
  *     responses:
  *       200:
  *         description: List of todos
  */
-router.get("/", getTodos);
+router.get("/",authMiddleware, getTodos);
 
 /**
  * @swagger
- * /api/todos/:
+ * /api/todos:
  *   post:
  *     summary: Create a new todo
  *     tags: [Todos]
- *     parameters:
- *         schema:
- *           type: string
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Todo'
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *               completed:
+ *                 type: boolean
  *     responses:
  *       201:
- *         description: Created successfully
- *       404:
- *         description: Todo not found
+ *         description: Todo created
  */
-router.post("/", createTodo);
+router.post("/",authMiddleware, createTodo);
 
 /**
  * @swagger
@@ -96,6 +86,8 @@ router.post("/", createTodo);
  *   get:
  *     summary: Get a single todo by ID
  *     tags: [Todos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -113,7 +105,7 @@ router.post("/", createTodo);
  *       404:
  *         description: Todo not found
  */
-router.get("/:id", getTodoById);
+router.get("/:id", authMiddleware, getTodoById);
 
 
 /**
@@ -122,6 +114,8 @@ router.get("/:id", getTodoById);
  *   put:
  *     summary: Update a todo
  *     tags: [Todos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -140,7 +134,7 @@ router.get("/:id", getTodoById);
  *       404:
  *         description: Todo not found
  */
-router.put("/:id", updateTodo);
+router.put("/:id", authMiddleware, updateTodo);
 
 /**
  * @swagger
@@ -160,7 +154,7 @@ router.put("/:id", updateTodo);
  *       404:
  *         description: Todo not found
  */
-router.delete("/:id", deleteTodo);
+router.delete("/:id", authMiddleware, deleteTodo);
 
 
 

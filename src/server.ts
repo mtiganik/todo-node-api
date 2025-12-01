@@ -14,7 +14,6 @@ async function start() {
 
   try {
     const app = express();
-    console.log("userRoutes imported:", !!userRoutes);
 
     connectDB().catch((error) => {
       console.error("Failed to connect to database:", error);
